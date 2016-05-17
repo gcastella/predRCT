@@ -1,9 +1,9 @@
 # DATA --------------------------------------------------------------------
 
 #' Inclussions and ACS events of a RCT.
-#' 
+#'
 #' Times of inclusion and time of follow-up until event or censorship for 881 patients.
-#' 
+#'
 #' @format A dataset with 881 rows and 6 variables:
 #' \describe{
 #' \item{id}{Id of the patient.}
@@ -13,8 +13,9 @@
 #' \item{y}{Follow-up time until the event or a censorship.}
 #' \item{end}{Days elapsed between the inclusion and the last follow-up visit or event.}
 #' }
-#' 
+#'
 #' @docType data
 #' @name RCTdata
 #' @usage data(RCTdata)
+#' @export
 "RCTdata"
