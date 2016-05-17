@@ -4,14 +4,16 @@
 \alias{as.period}
 \title{Time Period}
 \usage{
-as.period(times, period.length, numeric = TRUE)
+as.period(times, period.length, numeric = TRUE, origin = NULL)
 }
 \arguments{
-\item{times}{Vector of times to transform to periods.}
+\item{times}{Vector of calendar times (elapsed from the begining of the study) to transform to periods. Dates are also allowed but origin argument must be given then.}
 
 \item{period.length}{Length of each time period.}
 
-\item{numeric}{Logical. Return the periods as a numeric? Defaults to TRUE}
+\item{numeric}{Logical. If \code{TRUE}, returns the periods as a numeric. Defaults to \code{TRUE}}
+
+\item{origin}{Date at which the trial began. Ignored unless times are dates.}
 }
 \value{
 Returns a character (or numeric when \code{numeric = TRUE}) vector of length values with
@@ -22,6 +24,12 @@ Transform time unit to period of time
 }
 \details{
 Time periods are closed on the right, and 0 is included in the first one.
-Period labels, when \code{numeric} is \code{FALSE}, come from \code{cut}
+Period labels, when \code{numeric} is \code{FALSE}, come from \code{cut}.
+}
+\examples{
+as.period(c(0, 10, 89, 90, 91, 200), period.length = 90, numeric = TRUE)
+as.period(c(0, 10, 89, 90, 91, 200), period.length = 90, numeric = FALSE)
+as.period(as.Date("10-2-2000", "\%d-\%m-\%Y"), period.length = 90, origin = as.Date("01-1-2000", "\%d-\%m-\%Y"))
+
 }
 

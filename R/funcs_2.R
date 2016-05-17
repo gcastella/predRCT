@@ -1,18 +1,13 @@
 # OPTIONS -----------------------------------------------------------------
 
-# .onLoad <- function(libname = find.package("predRCT"), pkgname = "predRCT") {
-#   # CARE: side effects
-#   options(RCT_names_match = c(inclusion = "inclusion",
-#                               y = "y",
-#                               delta = "delta",
-#                               abandon = "abandon"))
-#   
-# }
+.onLoad <- function(libname = find.package("predRCT"), pkgname = "predRCT") {
+  # CARE: side effects
+  options(RCT_names_match = c(inclusion = "inclusion",
+                              y = "y",
+                              delta = "delta",
+                              abandon = "abandon"))
 
-options(RCT_names_match = c(inclusion = "inclusion",
-                            y = "y",
-                            delta = "delta",
-                            abandon = "abandon"))
+}
 
 
 # GENERAL FUNCTIONS -------------------------------------------------------
@@ -24,7 +19,7 @@ options(RCT_names_match = c(inclusion = "inclusion",
 #' @param times Vector of calendar times (elapsed from the begining of the study) to transform to periods. Dates are also allowed but origin argument must be given then.
 #' @param period.length Length of each time period.
 #' @param numeric Logical. If \code{TRUE}, returns the periods as a numeric. Defaults to \code{TRUE}
-#' @param origin Date at which the trial began. Ignored unless times are dates. 
+#' @param origin Date at which the trial began. Ignored unless times are dates.
 #'
 #' @details
 #' Time periods are closed on the right, and 0 is included in the first one.
@@ -32,12 +27,12 @@ options(RCT_names_match = c(inclusion = "inclusion",
 #'
 #' @return Returns a character (or numeric when \code{numeric = TRUE}) vector of length values with
 #' the corresponding time periods for each time.
-#' 
-#' @examples  
+#'
+#' @examples
 #' as.period(c(0, 10, 89, 90, 91, 200), period.length = 90, numeric = TRUE)
-#' as.period(c(0, 10, 89, 90, 91, 200), period.length = 90, numeric = FALSE) 
-#' as.period(as.Date("10-2-2000", "%d-%m-%Y"), period.length = 90, origin = as.Date("01-1-2000", "%d-%m-%Y")) 
-#' 
+#' as.period(c(0, 10, 89, 90, 91, 200), period.length = 90, numeric = FALSE)
+#' as.period(as.Date("10-2-2000", "%d-%m-%Y"), period.length = 90, origin = as.Date("01-1-2000", "%d-%m-%Y"))
+#'
 #' @export
 as.period <- function(times, period.length, numeric = TRUE, origin = NULL){
   stopifnot(all(times >= 0))
@@ -46,10 +41,10 @@ as.period <- function(times, period.length, numeric = TRUE, origin = NULL){
     times <- as.numeric(times - origin)
   }
   until <- max(times, na.rm = T) %/% period.length + 2
-  out <- cut(times, 
-             breaks = seq(0, 
-                          by = period.length, 
-                          length.out = until), 
+  out <- cut(times,
+             breaks = seq(0,
+                          by = period.length,
+                          length.out = until),
              include.lowest = TRUE)
   out <- if(numeric) as.numeric(out) else as.character(out)
   return(out)
@@ -61,44 +56,44 @@ as.period <- function(times, period.length, numeric = TRUE, origin = NULL){
 #' Removes last time period from the data, and changes those patients that had event in this period. Useful in case that
 #' the last time period has not finished.
 #'
-#' @param data Data to remove last time period. A data frame with variables inclusion, y, abandon and delta at least. 
+#' @param data Data to remove last time period. A data frame with variables inclusion, y, abandon and delta at least.
 #' Other variables won't be modified.
 #' @param period.length Length of each period.
 #' @param last.period Last period to take into account for the adjustment.
 #' @param origin Passed to \code{\link{as.period}}.
 #' @param numeric Passed to \code{\link{as.period}}.
-#' @param varnames By default \code{getOption("RCT_names_match")}. This is a character vector with names "inclusion", 
+#' @param varnames By default \code{getOption("RCT_names_match")}. This is a character vector with names "inclusion",
 #' "delta" and "y" (in any order), and its corresponding name in the argument data (gives the matching for accessing
 #'  to inclusion times, censore indicator, and time of follow-up).
-#' @details 
+#' @details
 #' Usually the calendar time partition does not match exactly with the current follow-up time of the RCT. In these cases, the last
 #' time period is shorter than the others and one solution is to ignore the data in this time period, removing those patients and
 #' correcting censores and events from others.
-#' 
-#' @return The same data frame but without the patients included in the last period of time (removed), and some 
+#'
+#' @return The same data frame but without the patients included in the last period of time (removed), and some
 #' modified delta's.
-#' 
+#'
 #' @export
-#' 
-period_adj <- function(data, period.length, 
-                       last.period = NULL, 
-                       varnames = getOption("RCT_names_match"), 
+#'
+period_adj <- function(data, period.length,
+                       last.period = NULL,
+                       varnames = getOption("RCT_names_match"),
                        origin = NULL,
                        numeric = TRUE){
-  
-  if(is.null(last.period)) last.period <- as.period(max(data[, varnames["y"]] + data[, varnames["inclusion"]], na.rm = TRUE), 
+
+  if(is.null(last.period)) last.period <- as.period(max(data[, varnames["y"]] + data[, varnames["inclusion"]], na.rm = TRUE),
                                                     period.length = period.length,
                                                     numeric = numeric,
                                                     origin = origin)
 
-  start_lastp <- which(as.period(times = data[, varnames["inclusion"]], 
-                                 period.length = period.length, 
+  start_lastp <- which(as.period(times = data[, varnames["inclusion"]],
+                                 period.length = period.length,
                                  origin = origin,
                                  numeric = numeric) >= last.period)
   if(length(start_lastp) > 0)  data <- data[- start_lastp, ]
 
-  end_lastp <- which(as.period(data[, varnames["y"]] + data[, varnames["inclusion"]], 
-                               period.length = period.length, 
+  end_lastp <- which(as.period(data[, varnames["y"]] + data[, varnames["inclusion"]],
+                               period.length = period.length,
                                origin = origin,
                                numeric = numeric) >= last.period)
   if(length(end_lastp) > 0){
@@ -118,7 +113,7 @@ period_adj <- function(data, period.length,
 #   num <- exp(periods * alpha1 + alpha0)
 #   return(num / (1 + num))
 # }
-# 
+#
 # pred_asymptote <- function(periods, model, asymptote = min(model$y, na.rm = T), ...){
 #   model <- eval(model, parent.frame())
 #   if(missing(periods)){
@@ -133,9 +128,9 @@ period_adj <- function(data, period.length,
 
 
 #' Predicting the number of inclusions in a time period
-#' 
+#'
 #' Predict the number of total inclusions in future time periods using the passed model for the counts.
-#' 
+#'
 #' @param time.inclusion Inclusion times for the patients in the study.
 #' @param period.inclusion Period of inclusion of the patients in the study. Either this or time.inlcusion has to be passed.
 #' @param model.args List with the arguments needed for the model, called via do.call(model.args[[1]], model.args[-1]).
@@ -144,15 +139,15 @@ period_adj <- function(data, period.length,
 #' @param boot Calculate or not bootstrap CI intervals.
 #' @param boot.samples Number of samples for the CI intervals.
 #' @param period.length, origin, numeric Arguments passed to as.period if time.inclusion is used instead of period.inclusion.
-#' 
-#' @details 
+#'
+#' @details
 #' Data can be passed using time.inclusion with the days elapsed from the beginning of the RCT until the inclusion of each patient, or period.inclusion
 #' with the period of the study that the patient was recruited. In the first case peroid.length, origin and/or numeric can be passed also.
 #' For fitting a poisson glm for instance, set model.args as list("glm", formula, family = poisson). Then do.before and do.after can be used to modify
 #' or change the data as needed. substitute(df2$counts) can be used to get the data.
 #' @return  A list with the counts predicted in each period using the model given, the cummulative counts, bootstrap CI for the counts and cummulative counts
 #' if asked, the data used and the last period.
-#' 
+#'
 #' @export
 inclusionsCount <- function(time.inclusion = NULL,
                             period.inclusion = NULL,
@@ -267,19 +262,19 @@ survFUN <- function(object, period.length, how.many = 1000){
 
 
 #' Calculate proabilities of event
-#' 
+#'
 #' Calculate proabilities of event for a set/subset of patients in a time interval, using a given survival function.
-#' 
+#'
 #' @param patients Subset of indices for which to calculate the probabilities
 #' @param data Dataset with the times of inclussion, withdrawals, censoring indicator, time of follow-up, ...
 #' @param start, end Start or end of the interval of which to calculate the probabilities.
 #' @param last.time Number of days elapsed since the beginning of the trial.
 #' @param FUN survival function used for calculating the probabilities. Usually output from survFUN().
-#' 
+#'
 #' @return A vector with the probabilities with the same length as nrow(data[patients, , drop = FALSE]).
-#' 
+#'
 #' @export
-#' 
+#'
 probAB <- function(patients = TRUE, data, start, end, last.time, FUN){
 
   datapat <- data[patients, ]
@@ -352,7 +347,7 @@ eventsCount <- function(data = NULL,
                         past = FALSE,
                         boot = TRUE,
                         boot.samples = 500,
-                        varnames = getOption("RCT_names_match"), 
+                        varnames = getOption("RCT_names_match"),
                         surv.object,
                         how.many = 1000,
                         FUN = NULL){
@@ -385,13 +380,13 @@ eventsCount <- function(data = NULL,
     data <- dat[indices, , drop = FALSE]
     data2 <- data
     if(is.null(FUN)){
-      FUN <- survFUN(object = update(surv.object, data = data), 
-                     period.length = period.length, 
+      FUN <- survFUN(object = update(surv.object, data = data),
+                     period.length = period.length,
                      how.many = how.many)
     }
-    
+
     stopifnot(ncol(data) == 4)
-    last.period <- as.period(max(data[, varnames["inclusion"]] + data[, varnames["y"]], na.rm = TRUE), 
+    last.period <- as.period(max(data[, varnames["inclusion"]] + data[, varnames["y"]], na.rm = TRUE),
                              period.length = period.length)
     last.time <- last.period * period.length
 
@@ -447,13 +442,13 @@ eventsCount <- function(data = NULL,
       events_future <- NULL
       n_future <- NULL
     }
-    
+
     ev_obs <- cumsum(
       table(as.period(times = data2$inclusion + data2$y,
                       period.length = period.length),
             data2$delta)[, 2]
     )
-    
+
     out <- list()
     out$events <- c(events_past, events_future)
     out$events_observed <- ev_obs
@@ -467,14 +462,14 @@ eventsCount <- function(data = NULL,
   out <- bootstrap_fun(data, TRUE)
 
   if(boot){
-    bts <- replicate(simplify = FALSE, 
-                     boot.samples, 
-                     expr = bootstrap_fun(dat = data, 
+    bts <- replicate(simplify = FALSE,
+                     boot.samples,
+                     expr = bootstrap_fun(dat = data,
                                           sample(nrow(data), replace = TRUE)))
     ev_mat <- do.call(rbind, lapply(bts, getElement, name = "events"))
     out$events_ci <- apply(ev_mat, 2, quantile, probs = c(0.025, 0.975))
   }
-  
+
   return(invisible(out))
 }
 
@@ -482,7 +477,7 @@ eventsCount <- function(data = NULL,
 # PLOTS -------------------------------------------------------------------
 
 #' Plot the output of inclusionsCount
-#' 
+#'
 #' Produces two plots: one with the counts of each time period and the predicted ones, and the other with the cummulative counts.
 #'
 #' @param inclusionsCount.list A list of outputs of inclusionsCount().
@@ -492,21 +487,21 @@ eventsCount <- function(data = NULL,
 #' @param use.letters Index all elements in the list with a letter when plotting.
 #' @param call.mfrow Wether to display all plots in the same window.
 #' @param ... Other arguments passed to par().
-#' 
+#'
 #' @return Just produces one or more plots.
-#'  
+#'
 #' @export
-inclusions_plot <- function(inclusionsCount.list, 
-                            origin = NULL, period.length = NULL, N, 
+inclusions_plot <- function(inclusionsCount.list,
+                            origin = NULL, period.length = NULL, N,
                             use.letters = TRUE, call.mfrow = TRUE, ...){
   par_opts <- par()
   on.exit(suppressWarnings(par(par_opts)))
   if(all(c("counts", "cummulative.counts") %in% names(inclusionsCount.list))) inclusionsCount.list <- list(inclusionsCount.list)
   if(! all(sapply(inclusionsCount.list, is.list))) stop("Argument 'inclusionsCount.list' must be a list of different outputs from 'inclusionsCount' function.")
- 
+
   if(call.mfrow) par(mfrow = c(length(inclusionsCount.list), 2))
   par(...)
-  
+
   for(i in seq_along(inclusionsCount.list)){
     aux <- inclusionsCount.list[[i]]
     bool <- 0
@@ -558,7 +553,7 @@ inclusions_plot <- function(inclusionsCount.list,
 
 
 #' Plot the output of eventsCount
-#' 
+#'
 #' Plots the cummulative number of events observed and expected using the survival functions given to eventsCount().
 #'
 #' @param eventsCount.list A list of outputs of eventsCount().
@@ -568,21 +563,21 @@ inclusions_plot <- function(inclusionsCount.list,
 #' @param use.letters Index all elements in the list with a letter when plotting.
 #' @param call.mfrow Wether to display all plots in the same window.
 #' @param ... Other arguments passed to par().
-#' 
+#'
 #' @return Just produces one or more plots.
-#'  
+#'
 #' @export
-events_plot <- function(eventsCount.list, 
-                        origin = NULL, period.length = NULL, E, 
+events_plot <- function(eventsCount.list,
+                        origin = NULL, period.length = NULL, E,
                         use.letters = TRUE, call.mfrow = TRUE, ...){
   par_opts <- par()
   on.exit(suppressWarnings(par(par_opts)))
   if(all(c("events", "percent.events") %in% names(eventsCount.list))) eventsCount.list <- list(eventsCount.list)
   if(! all(sapply(eventsCount.list, is.list))) stop("Argument 'eventsCount.list' must be a list of different outputs from 'eventsCount' function.")
-  
+
   if(call.mfrow) par(mfrow = c(length(eventsCount.list), 1))
   par(...)
-  
+
   for(i in seq_along(eventsCount.list)){
     aux <- eventsCount.list[[i]]
     bool <- 0
@@ -628,8 +623,8 @@ events_plot <- function(eventsCount.list,
 #' @return No output is produced. Only a plot.
 #'
 #' @export
-periods_plot <- function(period.length, time.inclusion, 
-                         use.letters = TRUE, 
+periods_plot <- function(period.length, time.inclusion,
+                         use.letters = TRUE,
                          call.mfrow = TRUE, ...){
   mf <- statTools::descomp(length(period.length))
   if(call.mfrow) par(mfrow = mf)
@@ -677,7 +672,7 @@ survs_plot <- function(surv.funs,
   mf <- statTools::descomp(length(surv.funs), sum = TRUE, rev = rev)
   if(call.mfrow) par(mfrow = mf)
   par(...)
-  
+
   for(i in seq_along(surv.funs)){
     xs <- seq(0, xlim, length.out = 100)
     plot(survfit.object, conf.int = FALSE, xlim = c(0, xlim))

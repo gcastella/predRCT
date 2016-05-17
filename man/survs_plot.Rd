@@ -5,8 +5,8 @@
 \title{Plot survival functions}
 \usage{
 survs_plot(surv.funs, survfit.object, period.length, xlim = 2 *
-  max(summary(survfit.object)$time), call.par = TRUE, letters = call.par,
-  rev = TRUE, ...)
+  max(summary(survfit.object)$time), call.mfrow = TRUE,
+  use.letters = call.mfrow, rev = TRUE, ...)
 }
 \arguments{
 \item{surv.funs}{List of functions returned by \code{survFUN}.}
@@ -17,13 +17,13 @@ survs_plot(surv.funs, survfit.object, period.length, xlim = 2 *
 
 \item{xlim}{Maximum xlim for the plot.}
 
-\item{call.par}{Call \code{par()} with mfrow for plotting all graphics in the same figure.}
-
-\item{letters}{Whether to plot alphabet letters top-left corner of each plot.}
-
 \item{rev}{Defaults to TRUE. See argument rev in \code{statTools::descomp}. It is reverses the vector passed to \code{mfrow} argument.}
 
 \item{...}{Further arguments passed to par.}
+
+\item{call.par}{Call \code{par()} with mfrow for plotting all graphics in the same figure.}
+
+\item{letters}{Whether to plot alphabet letters top-left corner of each plot.}
 }
 \value{
 No output is produced. Only a plot.

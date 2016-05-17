@@ -4,16 +4,17 @@
 \alias{periods_plot}
 \title{Plot histogram for different lengths of the time periods}
 \usage{
-periods_plot(period.length, time.inclusion, letters = TRUE, ...)
+periods_plot(period.length, time.inclusion, use.letters = TRUE,
+  call.mfrow = TRUE, ...)
 }
 \arguments{
 \item{period.length}{Vector with the lengths for the periods. One plot is produced for each.}
 
 \item{time.inclusion}{Vector with the inclusion times.}
 
-\item{letters}{Whether to plot alphabet letters top-left corner of each plot.}
-
 \item{...}{Further arguments passed to par.}
+
+\item{letters}{Whether to plot alphabet letters top-left corner of each plot.}
 }
 \value{
 No output is produced. Only a plot.

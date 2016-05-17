@@ -4,7 +4,7 @@
 \alias{survFUN}
 \title{Generate Survival Function}
 \usage{
-survFUN(object, period.length, how.many = 100)
+survFUN(object, period.length, how.many = 1000)
 }
 \arguments{
 \item{object}{survfit or survreg object.}

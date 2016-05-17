@@ -6,7 +6,9 @@
 \usage{
 eventsCount(data = NULL, time.inclusion = NULL, time.end = NULL,
   time.followup = NULL, delta, abandon, new.inclusions = NULL,
-  origin = NULL, period.length, past = FALSE, FUN)
+  origin = NULL, period.length, past = FALSE, boot = TRUE,
+  boot.samples = 500, varnames = getOption("RCT_names_match"), surv.object,
+  how.many = 1000, FUN = NULL)
 }
 \arguments{
 \item{data}{Defaults to NULL. Data frame with the inclusion times (named as inclusion), follow-up times (y) or ending times (end),
