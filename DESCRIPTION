@@ -8,3 +8,7 @@ Description: Implements method detailed in the Master's thesis Predicting the Re
 License: GPL (>= 2)
 LazyData: TRUE
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
